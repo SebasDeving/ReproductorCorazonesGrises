@@ -1090,11 +1090,6 @@
     <audio id="radio" preload="auto" autoplay src="https://technoplayerserver.net/8226/stream"></audio>
   </main>
 
-  <script
-    data-port="8226"
-    id="sonic_js"
-    src="https://antyserv.in/cp/widgets.js?r=321"
-  ></script>
   <script>
     (() => {
       const player = document.querySelector(".player");
@@ -1105,6 +1100,45 @@
       const clock = document.getElementById("clock");
       const history = document.querySelector(".history");
       const closeHistory = document.querySelector(".history-close");
+      const title = document.getElementById("sonic_title");
+      const art = document.getElementById("sonic_art");
+      const dj = document.getElementById("sonic_dj");
+      const listeners = document.getElementById("sonic_listeners");
+      const bitrate = document.getElementById("sonic_bitrate");
+      const historyList = document.getElementById("sonic_history");
+
+      const updateMetadata = async () => {
+        try {
+          const response = await fetch("https://technoplayerserver.net/cp/get_info.php?p=8226", { cache: "no-store" });
+          if (!response.ok) throw new Error(`Metadata HTTP ${response.status}`);
+          const data = await response.json();
+
+          title.textContent = data.title || "Sin información";
+          const djName = String(data.djusername || "").trim();
+          dj.textContent = !djName || /^no\s*dj$/i.test(djName) ? "AutoDj" : djName;
+          listeners.textContent = data.listeners ?? "0";
+          bitrate.textContent = data.bitrate ?? "—";
+
+          if (data.art) {
+            const cover = new Image();
+            cover.alt = "";
+            cover.src = `${data.art}${data.art.includes("?") ? "&" : "?"}r=${Date.now()}`;
+            cover.addEventListener("load", () => art.replaceChildren(cover), { once: true });
+          }
+
+          const items = Array.isArray(data.history) ? data.history : [];
+          historyList.replaceChildren(...items.map(item => {
+            const row = document.createElement("div");
+            row.textContent = String(item).replace(/<br\s*\/?>/gi, "").trim();
+            return row;
+          }));
+        } catch (error) {
+          console.warn("No se pudo actualizar la metadata:", error);
+        }
+      };
+
+      updateMetadata();
+      setInterval(updateMetadata, 10000);
 
       audio.volume = Number(volume.value);
       volume.style.setProperty("--volume", `${audio.volume * 100}%`);
