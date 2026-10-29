@@ -3,11 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="color-scheme" content="dark">
   <title>Reproductor</title>
   <style>
     :root {
-      color-scheme: dark;
       font-family: Inter, "Segoe UI", system-ui, sans-serif;
       --silver: #e8e9eb;
       --muted: #a8abb1;
@@ -403,9 +401,10 @@
       top: 42%;
       right: 16%;
       left: 16%;
+      overflow: hidden;
       padding: 25px 20px 34px;
       text-align: center;
-      background: radial-gradient(ellipse at center, rgba(6,7,9,.9) 0 42%, rgba(10,11,13,.67) 58%, transparent 74%);
+      background: transparent;
     }
 
     .eyebrow {
@@ -415,11 +414,24 @@
     }
 
     #sonic_title {
-      min-height: 2.2em;
+      display: block;
+      width: max-content;
+      min-width: 100%;
+      min-height: 1.2em;
       color: #fff;
       font-size: clamp(20px, 4.8vw, 27px);
+      font-weight: 700;
       line-height: 1.08;
-      text-shadow: 0 2px 8px #000, 0 0 16px #000;
+      white-space: nowrap;
+      text-shadow: 0 1px 3px rgba(0,0,0,.72);
+      animation: title-slide 13s linear infinite;
+      -webkit-line-clamp: unset;
+    }
+
+    @keyframes title-slide {
+      0% { opacity: 0; transform: translateX(115%); }
+      10%, 90% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(-115%); }
     }
 
     .meta {
@@ -983,9 +995,6 @@
       78% { opacity: .8; }
     }
 
-    .player::before {
-      background-image: url("https://xatimg.com/image/2Fe6ZBoxIXfB.png");
-    }
     .history[open] .history-panel {
       background: transparent;
       backdrop-filter: none;
